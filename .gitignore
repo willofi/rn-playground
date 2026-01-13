@@ -10,9 +10,7 @@ npm-debug.*
 *.orig.*
 web-build/
 
-
-
-
+# Build
 ios
 android
 
@@ -21,3 +19,10 @@ android
 
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
+
+# IDE
+.vscode
+.idea
+
+# environment
+.env.*
