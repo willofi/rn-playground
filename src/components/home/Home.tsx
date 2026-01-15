@@ -6,32 +6,32 @@ import { Badge } from '../ui/badge';
 export default function Home() {
   return (
     <ScrollView className="flex-1 bg-gray-50">
-      <View className="p-4 space-y-4">
+      <View className="p-4 gap-6">
         {/* Welcome Section */}
-        <View className="mb-2">
+        <View className="gap-2">
           <Text className="text-3xl font-bold text-gray-900">Welcome Back!</Text>
-          <Text className="text-gray-600 mt-1">Here's what's happening today</Text>
+          <Text className="text-gray-600">Here's what's happening today</Text>
         </View>
 
         {/* Stats Cards */}
-        <View className="flex-row gap-3">
+        <View className="flex-row gap-4">
           <Card className="flex-1">
-            <CardHeader>
+            <CardHeader className="gap-2">
               <CardTitle className="text-lg">Messages</CardTitle>
-              <Text className="text-3xl font-bold text-blue-600 mt-2">24</Text>
+              <Text className="text-3xl font-bold text-blue-600">24</Text>
             </CardHeader>
           </Card>
           <Card className="flex-1">
-            <CardHeader>
+            <CardHeader className="gap-2">
               <CardTitle className="text-lg">Active</CardTitle>
-              <Text className="text-3xl font-bold text-green-600 mt-2">12</Text>
+              <Text className="text-3xl font-bold text-green-600">12</Text>
             </CardHeader>
           </Card>
         </View>
 
         {/* Quick Actions */}
         <Card>
-          <CardHeader>
+          <CardHeader className="gap-1">
             <CardTitle>Quick Actions</CardTitle>
             <CardDescription>Shortcuts to your most used features</CardDescription>
           </CardHeader>
@@ -50,27 +50,27 @@ export default function Home() {
 
         {/* Recent Activity */}
         <Card>
-          <CardHeader>
+          <CardHeader className="gap-1">
             <CardTitle>Recent Activity</CardTitle>
             <CardDescription>Your latest interactions</CardDescription>
           </CardHeader>
-          <CardContent className="gap-3">
-            <View className="flex-row items-center justify-between py-3 border-b border-gray-100">
-              <View>
+          <CardContent className="gap-4">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1 gap-1">
                 <Text className="font-medium text-gray-900">New message received</Text>
                 <Text className="text-sm text-gray-500">2 minutes ago</Text>
               </View>
               <Badge>New</Badge>
             </View>
-            <View className="flex-row items-center justify-between py-3 border-b border-gray-100">
-              <View>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1 gap-1">
                 <Text className="font-medium text-gray-900">Search completed</Text>
                 <Text className="text-sm text-gray-500">15 minutes ago</Text>
               </View>
               <Badge variant="success">Done</Badge>
             </View>
-            <View className="flex-row items-center justify-between py-3">
-              <View>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1 gap-1">
                 <Text className="font-medium text-gray-900">Settings updated</Text>
                 <Text className="text-sm text-gray-500">1 hour ago</Text>
               </View>

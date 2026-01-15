@@ -14,16 +14,16 @@ export default function TabSettingsMain() {
   return (
     <View className="flex-1 bg-gray-50">
       {/* Header with Profile */}
-      <View className="p-4 bg-white border-b border-gray-200">
-        <Text className="text-2xl font-bold text-gray-900 mb-4">Settings</Text>
-        
+      <View className="p-4 bg-white border-b border-gray-200 gap-4">
+        <Text className="text-2xl font-bold text-gray-900">Settings</Text>
+
         <View className="flex-row items-center gap-4">
           <Avatar className="h-16 w-16">
             <AvatarFallback className="bg-blue-600">
               <Text className="text-white font-bold text-xl">ME</Text>
             </AvatarFallback>
           </Avatar>
-          <View className="flex-1">
+          <View className="flex-1 gap-1">
             <Text className="text-lg font-semibold text-gray-900">My Account</Text>
             <Text className="text-sm text-gray-500">myemail@example.com</Text>
           </View>
@@ -32,21 +32,21 @@ export default function TabSettingsMain() {
       </View>
 
       <ScrollView className="flex-1">
-        <View className="p-4 space-y-4">
+        <View className="p-4 gap-4">
           {/* Account Settings */}
           <Card>
-            <CardHeader>
+            <CardHeader className="gap-1">
               <CardTitle>Account Settings</CardTitle>
               <CardDescription>Manage your account preferences</CardDescription>
             </CardHeader>
-            <CardContent className="gap-2">
+            <CardContent className="gap-3">
               <Pressable
                 onPress={() => router.push('/settings/profile')}
-                className="flex-row items-center justify-between py-3 border-b border-gray-100">
+                className="flex-row items-center justify-between py-3">
                 <Text className="text-gray-900 font-medium">Edit Profile</Text>
                 <Text className="text-gray-400">›</Text>
               </Pressable>
-              <Pressable className="flex-row items-center justify-between py-3 border-b border-gray-100">
+              <Pressable className="flex-row items-center justify-between py-3">
                 <Text className="text-gray-900 font-medium">Change Password</Text>
                 <Text className="text-gray-400">›</Text>
               </Pressable>
@@ -59,13 +59,13 @@ export default function TabSettingsMain() {
 
           {/* Preferences */}
           <Card>
-            <CardHeader>
+            <CardHeader className="gap-1">
               <CardTitle>Preferences</CardTitle>
               <CardDescription>Customize your experience</CardDescription>
             </CardHeader>
-            <CardContent className="gap-3">
-              <View className="flex-row items-center justify-between py-2">
-                <View className="flex-1">
+            <CardContent className="gap-4">
+              <View className="flex-row items-center justify-between">
+                <View className="flex-1 gap-1">
                   <Text className="text-gray-900 font-medium">Push Notifications</Text>
                   <Text className="text-sm text-gray-500">Receive alerts and updates</Text>
                 </View>
@@ -74,33 +74,30 @@ export default function TabSettingsMain() {
                   onValueChange={setNotificationsEnabled}
                 />
               </View>
-              <View className="flex-row items-center justify-between py-2">
-                <View className="flex-1">
+              <View className="flex-row items-center justify-between">
+                <View className="flex-1 gap-1">
                   <Text className="text-gray-900 font-medium">Dark Mode</Text>
                   <Text className="text-sm text-gray-500">Switch to dark theme</Text>
                 </View>
-                <Switch
-                  value={darkModeEnabled}
-                  onValueChange={setDarkModeEnabled}
-                />
+                <Switch value={darkModeEnabled} onValueChange={setDarkModeEnabled} />
               </View>
             </CardContent>
           </Card>
 
           {/* Support */}
           <Card>
-            <CardHeader>
+            <CardHeader className="gap-1">
               <CardTitle>Support</CardTitle>
               <CardDescription>Get help and information</CardDescription>
             </CardHeader>
-            <CardContent className="gap-2">
+            <CardContent className="gap-3">
               <Pressable
                 onPress={() => router.push('/info')}
-                className="flex-row items-center justify-between py-3 border-b border-gray-100">
+                className="flex-row items-center justify-between py-3">
                 <Text className="text-gray-900 font-medium">Help Center</Text>
                 <Text className="text-gray-400">›</Text>
               </Pressable>
-              <Pressable className="flex-row items-center justify-between py-3 border-b border-gray-100">
+              <Pressable className="flex-row items-center justify-between py-3">
                 <Text className="text-gray-900 font-medium">Contact Support</Text>
                 <Text className="text-gray-400">›</Text>
               </Pressable>
