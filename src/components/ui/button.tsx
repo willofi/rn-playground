@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { TouchableOpacity, Text, TouchableOpacityProps } from 'react-native';
+import { cn } from '@/lib/utils';
 
 interface ButtonProps extends TouchableOpacityProps {
   variant?: 'default' | 'outline' | 'ghost';
@@ -18,7 +19,7 @@ const Button = React.forwardRef<TouchableOpacity, ButtonProps>(
 
     const sizeClasses = {
       default: 'h-10 px-4 py-2',
-      sm: 'h-8 px-3 text-sm',
+      sm: 'h-8 px-3',
       lg: 'h-12 px-8',
     };
 
@@ -31,10 +32,19 @@ const Button = React.forwardRef<TouchableOpacity, ButtonProps>(
     return (
       <TouchableOpacity
         ref={ref}
-        className={`rounded-md items-center justify-center ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+        className={cn(
+          'rounded-md items-center justify-center',
+          variantClasses[variant],
+          sizeClasses[size],
+          className
+        )}
         {...props}
       >
-        <Text className={`font-medium ${textColorClasses[variant]}`}>{children}</Text>
+        {typeof children === 'string' ? (
+          <Text className={cn('font-medium', textColorClasses[variant])}>{children}</Text>
+        ) : (
+          children
+        )}
       </TouchableOpacity>
     );
   }

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { View, Text } from 'react-native';
+import { cn } from '@/lib/utils';
 
 interface BadgeProps {
   variant?: 'default' | 'secondary' | 'success' | 'destructive';
@@ -26,12 +27,20 @@ const Badge = React.forwardRef<View, BadgeProps>(
     return (
       <View
         ref={ref}
-        className={`inline-flex items-center rounded-full px-2.5 py-0.5 ${variantClasses[variant]} ${className}`}
+        className={cn(
+          'inline-flex items-center justify-center rounded-full px-2.5 py-0.5',
+          variantClasses[variant],
+          className
+        )}
         {...props}
       >
-        <Text className={`text-xs font-semibold ${textColorClasses[variant]}`}>
-          {children}
-        </Text>
+        {typeof children === 'string' ? (
+          <Text className={cn('text-xs font-semibold', textColorClasses[variant])}>
+            {children}
+          </Text>
+        ) : (
+          children
+        )}
       </View>
     );
   }
