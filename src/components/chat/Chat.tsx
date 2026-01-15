@@ -17,14 +17,14 @@ export default function Chat() {
           {/* Chat Item 1 */}
           <TouchableOpacity activeOpacity={0.7}>
             <Card className="bg-blue-50">
-              <CardContent className="p-4">
+              <CardContent className="py-4 px-4">
                 <View className="flex-row items-center gap-4">
                   <Avatar className="h-12 w-12">
                     <AvatarFallback className="bg-blue-600">
                       <Text className="text-white font-semibold">JD</Text>
                     </AvatarFallback>
                   </Avatar>
-                  <View className="flex-1 gap-1">
+                  <View className="flex-1 gap-1 py-1">
                     <View className="flex-row items-center justify-between">
                       <Text className="font-semibold text-gray-900">John Doe</Text>
                       <Text className="text-xs text-gray-500">2m ago</Text>
@@ -42,14 +42,14 @@ export default function Chat() {
           {/* Chat Item 2 */}
           <TouchableOpacity activeOpacity={0.7}>
             <Card>
-              <CardContent className="p-4">
+              <CardContent className="py-4 px-4">
                 <View className="flex-row items-center gap-4">
                   <Avatar className="h-12 w-12">
                     <AvatarFallback className="bg-purple-600">
                       <Text className="text-white font-semibold">SM</Text>
                     </AvatarFallback>
                   </Avatar>
-                  <View className="flex-1 gap-1">
+                  <View className="flex-1 gap-1 py-1">
                     <View className="flex-row items-center justify-between">
                       <Text className="font-semibold text-gray-900">Sarah Miller</Text>
                       <Text className="text-xs text-gray-500">1h ago</Text>
@@ -67,14 +67,14 @@ export default function Chat() {
           {/* Chat Item 3 */}
           <TouchableOpacity activeOpacity={0.7}>
             <Card>
-              <CardContent className="p-4">
+              <CardContent className="py-4 px-4">
                 <View className="flex-row items-center gap-4">
                   <Avatar className="h-12 w-12">
                     <AvatarFallback className="bg-green-600">
                       <Text className="text-white font-semibold">TP</Text>
                     </AvatarFallback>
                   </Avatar>
-                  <View className="flex-1 gap-1">
+                  <View className="flex-1 gap-1 py-1">
                     <View className="flex-row items-center justify-between">
                       <Text className="font-semibold text-gray-900">Team Project</Text>
                       <Text className="text-xs text-gray-500">3h ago</Text>
@@ -91,14 +91,14 @@ export default function Chat() {
           {/* Chat Item 4 */}
           <TouchableOpacity activeOpacity={0.7}>
             <Card>
-              <CardContent className="p-4">
+              <CardContent className="py-4 px-4">
                 <View className="flex-row items-center gap-4">
                   <Avatar className="h-12 w-12">
                     <AvatarFallback className="bg-orange-600">
                       <Text className="text-white font-semibold">MW</Text>
                     </AvatarFallback>
                   </Avatar>
-                  <View className="flex-1 gap-1">
+                  <View className="flex-1 gap-1 py-1">
                     <View className="flex-row items-center justify-between">
                       <Text className="font-semibold text-gray-900">Mike Wilson</Text>
                       <Text className="text-xs text-gray-500">Yesterday</Text>
@@ -115,14 +115,14 @@ export default function Chat() {
           {/* Chat Item 5 */}
           <TouchableOpacity activeOpacity={0.7}>
             <Card>
-              <CardContent className="p-4">
+              <CardContent className="py-4 px-4">
                 <View className="flex-row items-center gap-4">
                   <Avatar className="h-12 w-12">
                     <AvatarFallback className="bg-pink-600">
                       <Text className="text-white font-semibold">EJ</Text>
                     </AvatarFallback>
                   </Avatar>
-                  <View className="flex-1 gap-1">
+                  <View className="flex-1 gap-1 py-1">
                     <View className="flex-row items-center justify-between">
                       <Text className="font-semibold text-gray-900">Emma Johnson</Text>
                       <Text className="text-xs text-gray-500">2 days ago</Text>
