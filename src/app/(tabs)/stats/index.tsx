@@ -1,8 +1,164 @@
 import React from 'react';
 import { Dimensions, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
-import { LineChart, PieChart } from 'react-native-chart-kit';
+import { LineChart } from 'react-native-chart-kit';
+import Svg, { G, Circle, Path, Line, Text as SvgText } from 'react-native-svg';
 
 const screenWidth = Dimensions.get('window').width;
+
+// 커스텀 파이 차트 컴포넌트
+interface PieSlice {
+  name: string;
+  value: number;
+  color: string;
+}
+
+interface CustomPieChartProps {
+  data: PieSlice[];
+  size: number;
+  formatValue: (value: number) => string;
+  formatPercentage: (percentage: number) => string;
+}
+
+const CustomPieChart: React.FC<CustomPieChartProps> = ({ data, size, formatValue, formatPercentage }) => {
+  // 더 큰 차트를 위한 설정
+  const padding = 40;
+  const chartSize = size - padding * 2;
+  const radius = chartSize / 2;
+  const cx = size / 2;
+  const cy = size / 2 + 10;
+  
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  
+  // 각도 계산
+  let currentAngle = -Math.PI / 2; // 12시 방향부터 시작
+  const slices = data.map((item) => {
+    const percentage = (item.value / total) * 100;
+    const angle = (item.value / total) * 2 * Math.PI;
+    const startAngle = currentAngle;
+    const endAngle = currentAngle + angle;
+    const middleAngle = currentAngle + angle / 2;
+    
+    currentAngle = endAngle;
+    
+    return {
+      ...item,
+      percentage,
+      startAngle,
+      endAngle,
+      middleAngle,
+    };
+  });
+  
+  // SVG Path 생성
+  const createArc = (startAngle: number, endAngle: number) => {
+    const x1 = cx + radius * Math.cos(startAngle);
+    const y1 = cy + radius * Math.sin(startAngle);
+    const x2 = cx + radius * Math.cos(endAngle);
+    const y2 = cy + radius * Math.sin(endAngle);
+    
+    const largeArc = endAngle - startAngle > Math.PI ? 1 : 0;
+    
+    return `M ${cx} ${cy} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+  };
+  
+  return (
+    <Svg width={size} height={size + 20}>
+      <G>
+        {/* 파이 슬라이스 */}
+        {slices.map((slice, index) => (
+          <Path
+            key={`slice-${index}`}
+            d={createArc(slice.startAngle, slice.endAngle)}
+            fill={slice.color}
+            stroke="#fff"
+            strokeWidth={3}
+          />
+        ))}
+        
+        {/* 각 슬라이스 위에 레이블 직접 표시 */}
+        {slices.map((slice, index) => {
+          const angle = slice.middleAngle;
+          
+          // 레이블을 파이 슬라이스 위에 배치 (radius의 70% 지점)
+          const labelRadius = radius * 0.7;
+          const labelX = cx + labelRadius * Math.cos(angle);
+          const labelY = cy + labelRadius * Math.sin(angle);
+          
+          // 미디엄-다크 그레이 (중간톤)
+          const textColor = '#4B5563';
+          
+          // 퍼센티지가 작으면 텍스트 표시 안함 (가독성 위해)
+          if (slice.percentage < 8) {
+            return null;
+          }
+          
+          return (
+            <G key={`label-${index}`}>
+              {/* 카테고리명 */}
+              <SvgText
+                x={labelX}
+                y={labelY - 12}
+                fontSize="14"
+                fontWeight="700"
+                fill={textColor}
+                textAnchor="middle"
+              >
+                {slice.name}
+              </SvgText>
+              
+              {/* 퍼센티지 */}
+              <SvgText
+                x={labelX}
+                y={labelY + 3}
+                fontSize="16"
+                fontWeight="700"
+                fill={textColor}
+                textAnchor="middle"
+              >
+                {formatPercentage(slice.percentage)}
+              </SvgText>
+              
+              {/* 금액 */}
+              <SvgText
+                x={labelX}
+                y={labelY + 18}
+                fontSize="12"
+                fill={textColor}
+                textAnchor="middle"
+              >
+                {formatValue(slice.value)}
+              </SvgText>
+            </G>
+          );
+        })}
+        
+        {/* 중앙 원 (배경) - 작게 */}
+        <Circle cx={cx} cy={cy} r={radius * 0.3} fill="#fff" />
+        
+        {/* 중앙 텍스트 */}
+        <SvgText
+          x={cx}
+          y={cy - 8}
+          fontSize="13"
+          fill="#999"
+          textAnchor="middle"
+        >
+          총 지출
+        </SvgText>
+        <SvgText
+          x={cx}
+          y={cy + 10}
+          fontSize="18"
+          fontWeight="700"
+          fill="#1a1a1a"
+          textAnchor="middle"
+        >
+          {formatValue(total)}
+        </SvgText>
+      </G>
+    </Svg>
+  );
+};
 
 export default function StatsScreen() {
   // 1년 간의 금액 데이터 (월별)
@@ -15,49 +171,32 @@ export default function StatsScreen() {
     ],
   };
 
-  // 이번 달 사용 비중 데이터
-  const categoryData = [
-    {
-      name: '식비',
-      population: 280000,
-      color: '#FF6B6B',
-      legendFontColor: '#333',
-      legendFontSize: 14,
-    },
-    {
-      name: '교통',
-      population: 150000,
-      color: '#4ECDC4',
-      legendFontColor: '#333',
-      legendFontSize: 14,
-    },
-    {
-      name: '쇼핑',
-      population: 200000,
-      color: '#FFE66D',
-      legendFontColor: '#333',
-      legendFontSize: 14,
-    },
-    {
-      name: '문화',
-      population: 120000,
-      color: '#A8E6CF',
-      legendFontColor: '#333',
-      legendFontSize: 14,
-    },
-    {
-      name: '기타',
-      population: 70000,
-      color: '#B4A7D6',
-      legendFontColor: '#333',
-      legendFontSize: 14,
-    },
+  // 이번 달 사용 비중 데이터 - 모던한 파스텔톤
+  const categoryData: PieSlice[] = [
+    { name: '식비', value: 280000, color: '#FF9AA2' }, // 소프트 코랄 핑크
+    { name: '교통', value: 150000, color: '#B5EAD7' }, // 민트 그린
+    { name: '쇼핑', value: 200000, color: '#FFD97D' }, // 소프트 골드
+    { name: '문화', value: 120000, color: '#C7CEEA' }, // 라벤더 블루
+    { name: '기타', value: 70000, color: '#E2A0FF' }, // 소프트 퍼플
   ];
 
-  const totalAmount = categoryData.reduce((sum, item) => sum + item.population, 0);
+  const totalAmount = categoryData.reduce((sum, item) => sum + item.value, 0);
+
+  // 숫자에 콤마 추가
+  const formatNumber = (num: number) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
 
   const formatCurrency = (amount: number) => {
-    return `${(amount / 10000).toFixed(0)}만원`;
+    return `${formatNumber(amount)}원`;
+  };
+
+  const formatCurrencyShort = (amount: number) => {
+    return `${formatNumber(Math.floor(amount / 10000))}만원`;
+  };
+
+  const formatPercentage = (percentage: number) => {
+    return `${percentage.toFixed(1)}%`;
   };
 
   const chartConfig = {
@@ -65,7 +204,7 @@ export default function StatsScreen() {
     backgroundGradientFrom: '#ffffff',
     backgroundGradientTo: '#ffffff',
     decimalPlaces: 0,
-    color: (opacity = 1) => `rgba(74, 144, 226, ${opacity})`,
+    color: (opacity = 1) => `rgba(255, 118, 117, ${opacity})`, // 코랄 핑크
     labelColor: (opacity = 1) => `rgba(102, 102, 102, ${opacity})`,
     style: {
       borderRadius: 16,
@@ -73,7 +212,7 @@ export default function StatsScreen() {
     propsForDots: {
       r: '5',
       strokeWidth: '2',
-      stroke: '#4A90E2',
+      stroke: '#FF7675', // 코랄 핑크
     },
     propsForBackgroundLines: {
       strokeDasharray: '',
@@ -122,17 +261,17 @@ export default function StatsScreen() {
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
               <Text style={styles.statLabel}>평균</Text>
-              <Text style={styles.statValue}>63만원</Text>
+              <Text style={styles.statValue}>{formatNumber(630000)}원</Text>
             </View>
             <View style={styles.statDivider} />
             <View style={styles.statItem}>
               <Text style={styles.statLabel}>최고</Text>
-              <Text style={styles.statValue}>82만원</Text>
+              <Text style={styles.statValue}>{formatNumber(820000)}원</Text>
             </View>
             <View style={styles.statDivider} />
             <View style={styles.statItem}>
               <Text style={styles.statLabel}>최저</Text>
-              <Text style={styles.statValue}>45만원</Text>
+              <Text style={styles.statValue}>{formatNumber(450000)}원</Text>
             </View>
           </View>
         </View>
@@ -144,35 +283,13 @@ export default function StatsScreen() {
             <Text style={styles.cardSubtitle}>총 {formatCurrency(totalAmount)}</Text>
           </View>
 
-          <View style={styles.pieChartContainer}>
-            <PieChart
+          <View style={styles.pieChartWrapper}>
+            <CustomPieChart
               data={categoryData}
-              width={screenWidth - 40}
-              height={220}
-              chartConfig={chartConfig}
-              accessor="population"
-              backgroundColor="transparent"
-              paddingLeft="15"
-              absolute
+              size={screenWidth - 40}
+              formatValue={formatCurrencyShort}
+              formatPercentage={formatPercentage}
             />
-          </View>
-
-          <View style={styles.legendContainer}>
-            {categoryData.map((item, index) => {
-              const percentage = ((item.population / totalAmount) * 100).toFixed(1);
-              return (
-                <View key={index} style={styles.legendItem}>
-                  <View style={styles.legendLeft}>
-                    <View style={[styles.legendColor, { backgroundColor: item.color }]} />
-                    <Text style={styles.legendName}>{item.name}</Text>
-                  </View>
-                  <View style={styles.legendRight}>
-                    <Text style={styles.legendAmount}>{formatCurrency(item.population)}</Text>
-                    <Text style={styles.legendPercentage}>{percentage}%</Text>
-                  </View>
-                </View>
-              );
-            })}
           </View>
         </View>
 
@@ -186,7 +303,7 @@ export default function StatsScreen() {
           <View style={styles.metricsGrid}>
             <View style={styles.metricCard}>
               <Text style={styles.metricLabel}>일평균 지출</Text>
-              <Text style={styles.metricValue}>27,333원</Text>
+              <Text style={styles.metricValue}>{formatNumber(27333)}원</Text>
               <Text style={styles.metricChange}>↑ 5.2%</Text>
             </View>
             <View style={styles.metricCard}>
@@ -197,7 +314,7 @@ export default function StatsScreen() {
             <View style={styles.metricCard}>
               <Text style={styles.metricLabel}>최다 지출일</Text>
               <Text style={styles.metricValue}>금요일</Text>
-              <Text style={styles.metricChange}>평균 45,000원</Text>
+              <Text style={styles.metricChange}>평균 {formatNumber(45000)}원</Text>
             </View>
             <View style={styles.metricCard}>
               <Text style={styles.metricLabel}>거래 건수</Text>
@@ -288,49 +405,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0e0e0',
     marginHorizontal: 10,
   },
-  pieChartContainer: {
+  pieChartWrapper: {
     alignItems: 'center',
     marginBottom: 20,
-  },
-  legendContainer: {
-    paddingHorizontal: 20,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  legendLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  legendColor: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 10,
-  },
-  legendName: {
-    fontSize: 15,
-    color: '#333',
-  },
-  legendRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  legendAmount: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#1a1a1a',
-    marginRight: 8,
-  },
-  legendPercentage: {
-    fontSize: 13,
-    color: '#999',
-    minWidth: 45,
-    textAlign: 'right',
+    marginTop: 10,
   },
   metricsGrid: {
     flexDirection: 'row',
