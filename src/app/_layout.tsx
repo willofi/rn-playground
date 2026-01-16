@@ -7,7 +7,7 @@ import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 SplashScreen.setOptions({
-  duration: 10000,
+  duration: 3000,
   fade: true,
 });
 

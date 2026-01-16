@@ -1,5 +1,5 @@
-import { Tabs } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
 import { View } from 'react-native';
 
 export default function TabLayout() {
@@ -31,6 +31,18 @@ export default function TabLayout() {
             marginTop: 4,
           },
           headerTitle: 'Search',
+        }}
+      />
+      <Tabs.Screen
+        name="stats/index"
+        options={{
+          title: '통계',
+          tabBarLabel: () => null,
+          tabBarIcon: ({ color }) => <FontAwesome size={20} name="bar-chart" color={color} />,
+          tabBarIconStyle: {
+            marginTop: 4,
+          },
+          headerTitle: 'Stats',
         }}
       />
       <Tabs.Screen
