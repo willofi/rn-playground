@@ -1,12 +1,25 @@
+import { useColorScheme } from '@/lib/color-scheme';
 import { FontAwesome } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { View } from 'react-native';
 
 export default function TabLayout() {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#000', // 활성화된 탭 색상
+        tabBarActiveTintColor: isDark ? '#FF7675' : '#000', // 활성화된 탭 색상
+        tabBarInactiveTintColor: isDark ? '#6B7280' : '#999',
+        tabBarStyle: {
+          backgroundColor: isDark ? '#242830' : '#fff',
+          borderTopColor: isDark ? '#3a3f4b' : '#e5e5e5',
+        },
+        headerStyle: {
+          backgroundColor: isDark ? '#242830' : '#fff',
+        },
+        headerTintColor: isDark ? '#fff' : '#000',
         headerShown: true,
       }}>
       <Tabs.Screen
@@ -74,8 +87,8 @@ export default function TabLayout() {
                   width: 6,
                   height: 6,
                   borderRadius: 3.5,
-                  borderWidth: 1, // 배경과 분리되어 보이게 흰색 테두리를 살짝 주면 더 깔끔해요
-                  borderColor: 'white',
+                  borderWidth: 1,
+                  borderColor: isDark ? '#242830' : 'white',
                 }}
               />
             </View>

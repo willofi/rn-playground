@@ -1,7 +1,8 @@
 import React from 'react';
 import { Dimensions, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import Svg, { G, Circle, Path, Line, Text as SvgText } from 'react-native-svg';
+import Svg, { G, Circle, Path, Text as SvgText } from 'react-native-svg';
+import { useColorScheme } from '@/lib/color-scheme';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -17,9 +18,10 @@ interface CustomPieChartProps {
   size: number;
   formatValue: (value: number) => string;
   formatPercentage: (percentage: number) => string;
+  isDark: boolean;
 }
 
-const CustomPieChart: React.FC<CustomPieChartProps> = ({ data, size, formatValue, formatPercentage }) => {
+const CustomPieChart: React.FC<CustomPieChartProps> = ({ data, size, formatValue, formatPercentage, isDark }) => {
   // 더 큰 차트를 위한 설정
   const padding = 40;
   const chartSize = size - padding * 2;
@@ -70,7 +72,7 @@ const CustomPieChart: React.FC<CustomPieChartProps> = ({ data, size, formatValue
             key={`slice-${index}`}
             d={createArc(slice.startAngle, slice.endAngle)}
             fill={slice.color}
-            stroke="#fff"
+            stroke={isDark ? '#242830' : '#fff'}
             strokeWidth={3}
           />
         ))}
@@ -133,14 +135,14 @@ const CustomPieChart: React.FC<CustomPieChartProps> = ({ data, size, formatValue
         })}
         
         {/* 중앙 원 (배경) - 작게 */}
-        <Circle cx={cx} cy={cy} r={radius * 0.3} fill="#fff" />
+        <Circle cx={cx} cy={cy} r={radius * 0.3} fill={isDark ? '#1a1d23' : '#fff'} />
         
         {/* 중앙 텍스트 */}
         <SvgText
           x={cx}
           y={cy - 8}
           fontSize="13"
-          fill="#999"
+          fill={isDark ? '#9ca3af' : '#999'}
           textAnchor="middle"
         >
           총 지출
@@ -150,7 +152,7 @@ const CustomPieChart: React.FC<CustomPieChartProps> = ({ data, size, formatValue
           y={cy + 10}
           fontSize="18"
           fontWeight="700"
-          fill="#1a1a1a"
+          fill={isDark ? '#fff' : '#1a1a1a'}
           textAnchor="middle"
         >
           {formatValue(total)}
@@ -161,6 +163,9 @@ const CustomPieChart: React.FC<CustomPieChartProps> = ({ data, size, formatValue
 };
 
 export default function StatsScreen() {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   // 1년 간의 금액 데이터 (월별)
   const monthlyData = {
     labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
@@ -200,12 +205,12 @@ export default function StatsScreen() {
   };
 
   const chartConfig = {
-    backgroundColor: '#ffffff',
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
+    backgroundColor: isDark ? '#242830' : '#ffffff',
+    backgroundGradientFrom: isDark ? '#242830' : '#ffffff',
+    backgroundGradientTo: isDark ? '#242830' : '#ffffff',
     decimalPlaces: 0,
     color: (opacity = 1) => `rgba(255, 118, 117, ${opacity})`, // 코랄 핑크
-    labelColor: (opacity = 1) => `rgba(102, 102, 102, ${opacity})`,
+    labelColor: (opacity = 1) => isDark ? `rgba(200, 200, 200, ${opacity})` : `rgba(102, 102, 102, ${opacity})`,
     style: {
       borderRadius: 16,
     },
@@ -216,14 +221,126 @@ export default function StatsScreen() {
     },
     propsForBackgroundLines: {
       strokeDasharray: '',
-      stroke: '#e0e0e0',
+      stroke: isDark ? '#3a3f4b' : '#e0e0e0',
       strokeWidth: 1,
     },
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: isDark ? '#1a1d23' : '#F5F7FA',
+    },
+    scrollView: {
+      flex: 1,
+    },
+    header: {
+      paddingHorizontal: 20,
+      paddingTop: 20,
+      paddingBottom: 16,
+      backgroundColor: isDark ? '#242830' : '#fff',
+    },
+    headerTitle: {
+      fontSize: 28,
+      fontWeight: '700',
+      color: isDark ? '#fff' : '#1a1a1a',
+      marginBottom: 4,
+    },
+    headerSubtitle: {
+      fontSize: 15,
+      color: isDark ? '#9ca3af' : '#666',
+    },
+    card: {
+      backgroundColor: isDark ? '#242830' : '#fff',
+      marginTop: 12,
+      paddingVertical: 20,
+    },
+    cardHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      marginBottom: 20,
+    },
+    cardTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: isDark ? '#fff' : '#1a1a1a',
+    },
+    cardSubtitle: {
+      fontSize: 13,
+      color: isDark ? '#9ca3af' : '#999',
+    },
+    chart: {
+      marginVertical: 8,
+      borderRadius: 16,
+      marginLeft: 10,
+    },
+    statsRow: {
+      flexDirection: 'row',
+      paddingHorizontal: 20,
+      paddingTop: 20,
+      justifyContent: 'space-around',
+    },
+    statItem: {
+      flex: 1,
+      alignItems: 'center',
+    },
+    statLabel: {
+      fontSize: 13,
+      color: isDark ? '#9ca3af' : '#999',
+      marginBottom: 4,
+    },
+    statValue: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: isDark ? '#fff' : '#1a1a1a',
+    },
+    statDivider: {
+      width: 1,
+      backgroundColor: isDark ? '#3a3f4b' : '#e0e0e0',
+      marginHorizontal: 10,
+    },
+    pieChartWrapper: {
+      alignItems: 'center',
+      marginBottom: 20,
+      marginTop: 10,
+    },
+    metricsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      paddingHorizontal: 10,
+    },
+    metricCard: {
+      width: '50%',
+      padding: 10,
+    },
+    metricLabel: {
+      fontSize: 13,
+      color: isDark ? '#9ca3af' : '#999',
+      marginBottom: 8,
+    },
+    metricValue: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: isDark ? '#fff' : '#1a1a1a',
+      marginBottom: 4,
+    },
+    metricChange: {
+      fontSize: 13,
+      color: '#FF6B6B',
+    },
+    positive: {
+      color: '#4ECDC4',
+    },
+    bottomPadding: {
+      height: 20,
+    },
+  });
+
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* 헤더 */}
         <View style={styles.header}>
@@ -289,6 +406,7 @@ export default function StatsScreen() {
               size={screenWidth - 40}
               formatValue={formatCurrencyShort}
               formatPercentage={formatPercentage}
+              isDark={isDark}
             />
           </View>
         </View>
@@ -330,114 +448,3 @@ export default function StatsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F7FA',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
-    backgroundColor: '#fff',
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1a1a1a',
-    marginBottom: 4,
-  },
-  headerSubtitle: {
-    fontSize: 15,
-    color: '#666',
-  },
-  card: {
-    backgroundColor: '#fff',
-    marginTop: 12,
-    paddingVertical: 20,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1a1a1a',
-  },
-  cardSubtitle: {
-    fontSize: 13,
-    color: '#999',
-  },
-  chart: {
-    marginVertical: 8,
-    borderRadius: 16,
-    marginLeft: 10,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statLabel: {
-    fontSize: 13,
-    color: '#999',
-    marginBottom: 4,
-  },
-  statValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1a1a1a',
-  },
-  statDivider: {
-    width: 1,
-    backgroundColor: '#e0e0e0',
-    marginHorizontal: 10,
-  },
-  pieChartWrapper: {
-    alignItems: 'center',
-    marginBottom: 20,
-    marginTop: 10,
-  },
-  metricsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 10,
-  },
-  metricCard: {
-    width: '50%',
-    padding: 10,
-  },
-  metricLabel: {
-    fontSize: 13,
-    color: '#999',
-    marginBottom: 8,
-  },
-  metricValue: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1a1a1a',
-    marginBottom: 4,
-  },
-  metricChange: {
-    fontSize: 13,
-    color: '#FF6B6B',
-  },
-  positive: {
-    color: '#4ECDC4',
-  },
-  bottomPadding: {
-    height: 20,
-  },
-});
