@@ -1,10 +1,32 @@
-import React from 'react';
-import { Dimensions, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
-import Svg, { G, Circle, Path, Text as SvgText } from 'react-native-svg';
 import { useColorScheme } from '@/lib/color-scheme';
+import React from 'react';
+import { Dimensions, Platform, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Circle, G, Path, Text as SvgText } from 'react-native-svg';
 
 const screenWidth = Dimensions.get('window').width;
+
+// 웹 환경에서는 차트 너비를 제한
+const getChartWidth = () => {
+  if (Platform.OS === 'web') {
+    // 웹에서는 최대 600px로 제한 (모바일과 유사한 크기)
+    return Math.min(screenWidth, 600);
+  }
+  return screenWidth;
+};
+
+const chartWidth = getChartWidth();
+
+// 파이 차트 크기 계산
+const getPieChartSize = () => {
+  if (Platform.OS === 'web') {
+    // 웹: 차트 너비의 70% (여백 고려)
+    return chartWidth * 0.7;
+  }
+  // 모바일: 화면 너비의 90% (더 크게)
+  return screenWidth * 0.9;
+};
 
 // 커스텀 파이 차트 컴포넌트
 interface PieSlice {
@@ -21,16 +43,30 @@ interface CustomPieChartProps {
   isDark: boolean;
 }
 
-const CustomPieChart: React.FC<CustomPieChartProps> = ({ data, size, formatValue, formatPercentage, isDark }) => {
+const CustomPieChart: React.FC<CustomPieChartProps> = ({
+  data,
+  size,
+  formatValue,
+  formatPercentage,
+  isDark,
+}) => {
   // 더 큰 차트를 위한 설정
   const padding = 40;
   const chartSize = size - padding * 2;
   const radius = chartSize / 2;
   const cx = size / 2;
   const cy = size / 2 + 10;
-  
+
   const total = data.reduce((sum, item) => sum + item.value, 0);
-  
+
+  // 플랫폼별 폰트 크기
+  const isWeb = Platform.OS === 'web';
+  const categoryFontSize = isWeb ? '14' : '11';
+  const percentageFontSize = isWeb ? '16' : '13';
+  const amountFontSize = isWeb ? '12' : '10';
+  const centerLabelFontSize = isWeb ? '13' : '11';
+  const centerValueFontSize = isWeb ? '18' : '15';
+
   // 각도 계산
   let currentAngle = -Math.PI / 2; // 12시 방향부터 시작
   const slices = data.map((item) => {
@@ -39,9 +75,9 @@ const CustomPieChart: React.FC<CustomPieChartProps> = ({ data, size, formatValue
     const startAngle = currentAngle;
     const endAngle = currentAngle + angle;
     const middleAngle = currentAngle + angle / 2;
-    
+
     currentAngle = endAngle;
-    
+
     return {
       ...item,
       percentage,
@@ -50,19 +86,19 @@ const CustomPieChart: React.FC<CustomPieChartProps> = ({ data, size, formatValue
       middleAngle,
     };
   });
-  
+
   // SVG Path 생성
   const createArc = (startAngle: number, endAngle: number) => {
     const x1 = cx + radius * Math.cos(startAngle);
     const y1 = cy + radius * Math.sin(startAngle);
     const x2 = cx + radius * Math.cos(endAngle);
     const y2 = cy + radius * Math.sin(endAngle);
-    
+
     const largeArc = endAngle - startAngle > Math.PI ? 1 : 0;
-    
+
     return `M ${cx} ${cy} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z`;
   };
-  
+
   return (
     <Svg width={size} height={size + 20}>
       <G>
@@ -76,85 +112,80 @@ const CustomPieChart: React.FC<CustomPieChartProps> = ({ data, size, formatValue
             strokeWidth={3}
           />
         ))}
-        
+
         {/* 각 슬라이스 위에 레이블 직접 표시 */}
         {slices.map((slice, index) => {
           const angle = slice.middleAngle;
-          
+
           // 레이블을 파이 슬라이스 위에 배치 (radius의 70% 지점)
           const labelRadius = radius * 0.7;
           const labelX = cx + labelRadius * Math.cos(angle);
           const labelY = cy + labelRadius * Math.sin(angle);
-          
+
           // 미디엄-다크 그레이 (중간톤)
           const textColor = '#4B5563';
-          
+
           // 퍼센티지가 작으면 텍스트 표시 안함 (가독성 위해)
           if (slice.percentage < 8) {
             return null;
           }
-          
+
           return (
             <G key={`label-${index}`}>
               {/* 카테고리명 */}
               <SvgText
                 x={labelX}
                 y={labelY - 12}
-                fontSize="14"
+                fontSize={categoryFontSize}
                 fontWeight="700"
                 fill={textColor}
-                textAnchor="middle"
-              >
+                textAnchor="middle">
                 {slice.name}
               </SvgText>
-              
+
               {/* 퍼센티지 */}
               <SvgText
                 x={labelX}
                 y={labelY + 3}
-                fontSize="16"
+                fontSize={percentageFontSize}
                 fontWeight="700"
                 fill={textColor}
-                textAnchor="middle"
-              >
+                textAnchor="middle">
                 {formatPercentage(slice.percentage)}
               </SvgText>
-              
+
               {/* 금액 */}
               <SvgText
                 x={labelX}
                 y={labelY + 18}
-                fontSize="12"
+                fontSize={amountFontSize}
                 fill={textColor}
-                textAnchor="middle"
-              >
+                textAnchor="middle">
                 {formatValue(slice.value)}
               </SvgText>
             </G>
           );
         })}
-        
+
         {/* 중앙 원 (배경) - 작게 */}
         <Circle cx={cx} cy={cy} r={radius * 0.3} fill={isDark ? '#1a1d23' : '#fff'} />
-        
+
         {/* 중앙 텍스트 */}
         <SvgText
           x={cx}
           y={cy - 8}
-          fontSize="13"
+          fontSize={centerLabelFontSize}
           fill={isDark ? '#9ca3af' : '#999'}
-          textAnchor="middle"
-        >
+          textAnchor="middle">
           총 지출
         </SvgText>
         <SvgText
           x={cx}
           y={cy + 10}
-          fontSize="18"
+          fontSize={centerValueFontSize}
           fontWeight="700"
           fill={isDark ? '#fff' : '#1a1a1a'}
-          textAnchor="middle"
-        >
+          textAnchor="middle">
           {formatValue(total)}
         </SvgText>
       </G>
@@ -165,6 +196,7 @@ const CustomPieChart: React.FC<CustomPieChartProps> = ({ data, size, formatValue
 export default function StatsScreen() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const insets = useSafeAreaInsets();
 
   // 1년 간의 금액 데이터 (월별)
   const monthlyData = {
@@ -210,7 +242,8 @@ export default function StatsScreen() {
     backgroundGradientTo: isDark ? '#242830' : '#ffffff',
     decimalPlaces: 0,
     color: (opacity = 1) => `rgba(255, 118, 117, ${opacity})`, // 코랄 핑크
-    labelColor: (opacity = 1) => isDark ? `rgba(200, 200, 200, ${opacity})` : `rgba(102, 102, 102, ${opacity})`,
+    labelColor: (opacity = 1) =>
+      isDark ? `rgba(200, 200, 200, ${opacity})` : `rgba(102, 102, 102, ${opacity})`,
     style: {
       borderRadius: 16,
     },
@@ -236,24 +269,31 @@ export default function StatsScreen() {
     },
     header: {
       paddingHorizontal: 20,
-      paddingTop: 20,
-      paddingBottom: 16,
+      paddingBottom: 12,
       backgroundColor: isDark ? '#242830' : '#fff',
+      borderBottomWidth: 1,
+      borderBottomColor: isDark ? '#3a3f4b' : '#e5e5e5',
     },
     headerTitle: {
-      fontSize: 28,
+      fontSize: 24,
       fontWeight: '700',
       color: isDark ? '#fff' : '#1a1a1a',
-      marginBottom: 4,
+      marginBottom: 2,
     },
     headerSubtitle: {
-      fontSize: 15,
+      fontSize: 14,
       color: isDark ? '#9ca3af' : '#666',
     },
     card: {
       backgroundColor: isDark ? '#242830' : '#fff',
       marginTop: 12,
       paddingVertical: 20,
+      // 웹 환경에서 최대 너비 제한 및 중앙 정렬
+      ...(Platform.OS === 'web' && {
+        maxWidth: 600,
+        marginHorizontal: 'auto' as any,
+        width: '100%',
+      }),
     },
     cardHeader: {
       flexDirection: 'row',
@@ -341,13 +381,14 @@ export default function StatsScreen() {
   return (
     <View style={styles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* 헤더 */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>통계</Text>
-          <Text style={styles.headerSubtitle}>나의 소비 분석</Text>
-        </View>
 
+      {/* 헤더 */}
+      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+        <Text style={styles.headerTitle}>Statistics</Text>
+        <Text style={styles.headerSubtitle}>Your spending analysis</Text>
+      </View>
+
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* 월별 지출 추이 */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
@@ -358,7 +399,7 @@ export default function StatsScreen() {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <LineChart
               data={monthlyData}
-              width={screenWidth * 1.8}
+              width={chartWidth * 1.8}
               height={220}
               chartConfig={chartConfig}
               bezier
@@ -403,7 +444,7 @@ export default function StatsScreen() {
           <View style={styles.pieChartWrapper}>
             <CustomPieChart
               data={categoryData}
-              size={screenWidth - 40}
+              size={getPieChartSize()}
               formatValue={formatCurrencyShort}
               formatPercentage={formatPercentage}
               isDark={isDark}
@@ -447,4 +488,3 @@ export default function StatsScreen() {
     </View>
   );
 }
-
