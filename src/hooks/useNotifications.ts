@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
-import * as Notifications from 'expo-notifications';
 import { registerForPushNotificationsAsync, sendLocalNotification } from '@/lib/notifications';
 import { supabaseMock } from '@/lib/supabase-mock';
+import * as Notifications from 'expo-notifications';
+import { useEffect, useRef, useState } from 'react';
+import { Platform } from 'react-native';
 
 /**
  * 푸시 알림과 Supabase 실시간 구독을 관리하는 커스텀 훅
@@ -13,6 +14,12 @@ export function useNotifications() {
   const responseListener = useRef<Notifications.Subscription>();
 
   useEffect(() => {
+    // 웹 환경에서는 푸시 알림 기능을 사용하지 않음
+    if (Platform.OS === 'web') {
+      console.log('웹 환경에서는 푸시 알림이 비활성화되었습니다.');
+      return;
+    }
+
     // 1. 푸시 알림 권한 요청 및 토큰 가져오기
     registerForPushNotificationsAsync().then((token) => {
       setExpoPushToken(token);
