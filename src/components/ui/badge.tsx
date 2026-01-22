@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { View, Text } from 'react-native';
 import { cn } from '@/lib/utils';
+import { useColorScheme } from '@/lib/color-scheme';
 
 interface BadgeProps {
   variant?: 'default' | 'secondary' | 'success' | 'destructive';
@@ -10,16 +11,19 @@ interface BadgeProps {
 
 const Badge = React.forwardRef<View, BadgeProps>(
   ({ className, variant = 'default', children, ...props }, ref) => {
+    const { colorScheme } = useColorScheme();
+    const isDark = colorScheme === 'dark';
+
     const variantClasses = {
       default: 'bg-blue-600',
-      secondary: 'bg-gray-200',
+      secondary: isDark ? 'bg-[#3a3f4b]' : 'bg-gray-200',
       success: 'bg-green-600',
       destructive: 'bg-red-600',
     };
 
     const textColorClasses = {
       default: 'text-white',
-      secondary: 'text-gray-900',
+      secondary: isDark ? 'text-gray-200' : 'text-gray-900',
       success: 'text-white',
       destructive: 'text-white',
     };
