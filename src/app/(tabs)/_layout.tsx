@@ -10,17 +10,13 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: isDark ? '#FF7675' : '#000', // 활성화된 탭 색상
+        tabBarActiveTintColor: isDark ? '#FF7675' : '#3b82f6', // 활성화된 탭 색상
         tabBarInactiveTintColor: isDark ? '#6B7280' : '#999',
         tabBarStyle: {
           backgroundColor: isDark ? '#242830' : '#fff',
           borderTopColor: isDark ? '#3a3f4b' : '#e5e5e5',
         },
-        headerStyle: {
-          backgroundColor: isDark ? '#242830' : '#fff',
-        },
-        headerTintColor: isDark ? '#fff' : '#000',
-        headerShown: true,
+        headerShown: false, // 모든 탭에서 헤더 숨김
       }}>
       <Tabs.Screen
         name="index"
@@ -31,7 +27,6 @@ export default function TabLayout() {
           tabBarIconStyle: {
             marginTop: 4,
           },
-          headerTitle: 'Home',
         }}
       />
       <Tabs.Screen
@@ -43,7 +38,6 @@ export default function TabLayout() {
           tabBarIconStyle: {
             marginTop: 4,
           },
-          headerTitle: 'Search',
         }}
       />
       <Tabs.Screen
@@ -55,7 +49,6 @@ export default function TabLayout() {
           tabBarIconStyle: {
             marginTop: 4,
           },
-          headerTitle: 'Stats',
         }}
       />
       <Tabs.Screen
@@ -67,7 +60,6 @@ export default function TabLayout() {
           tabBarIconStyle: {
             marginTop: 4,
           },
-          headerTitle: 'Chat',
         }}
       />
       <Tabs.Screen
@@ -83,7 +75,7 @@ export default function TabLayout() {
                   position: 'absolute',
                   right: -8,
                   top: -2,
-                  backgroundColor: 'orange',
+                  backgroundColor: '#f97316',
                   width: 6,
                   height: 6,
                   borderRadius: 3.5,
@@ -96,7 +88,6 @@ export default function TabLayout() {
           tabBarIconStyle: {
             marginTop: 4,
           },
-          headerShown: false,
         }}
       />
     </Tabs>
